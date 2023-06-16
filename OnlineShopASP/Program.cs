@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ICatalog, InMemoryCatalog>(); // Регистрация зависимости
+builder.Services.AddSingleton<ICatalog, InMemoryCatalog>(); // Р РµРіРёСЃС‚СЂР°С†РёСЏ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё
 
 builder.Services.Configure<JsonOptions>(
    options =>
