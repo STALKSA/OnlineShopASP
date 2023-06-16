@@ -13,7 +13,7 @@ namespace OnlineShopASP
             {
                 foreach (var product in _products.Values)
                 {
-                    product.Price *= 0.7m; // Снижаем цену на 30%
+                    product.Price *= 0.7m; // -30%
                 }
             }
 
@@ -31,7 +31,7 @@ namespace OnlineShopASP
             {
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Monday)
                 {
-                    product.Price *= 0.7m; // Снижаем цену на 30%
+                    product.Price *= 0.7m; // -30%
                 }
                 return product;
             }
