@@ -26,5 +26,6 @@
         public DateTime ProducedAt { get; set; }
         public DateTime ExpiredAt { get; set; }
         public double Stock { get; set; }
+        public bool HasDiscountApplied { get; set; }
     }
 }

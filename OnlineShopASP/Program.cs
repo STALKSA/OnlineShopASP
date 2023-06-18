@@ -1,12 +1,22 @@
 
+using MailKit.Security;
 using Microsoft.AspNetCore.Http.Json;
+using MimeKit.Text;
+using MimeKit;
 using OnlineShopASP;
 using System.Collections.Concurrent;
+using MailKit.Net.Smtp;
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ICatalog, InMemoryCatalog>(); // Регистрация зависимости
+
+
+builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();                       // Регистрация зависимости каталог
+builder.Services.AddSingleton<IClock, UtcClock>();                               // Регистрация зависимости Time
+builder.Services.AddSingleton<IEmailSender, MailKitSmtpEmailSender>();          //Регистрация отправки почты
+builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();   //Регистрация фонового сервиса
 
 builder.Services.Configure<JsonOptions>(
    options =>
@@ -19,7 +29,6 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-InMemoryCatalog catalog = new InMemoryCatalog();
 
 app.MapPost("/add_product", AddProduct);
 app.MapGet("/get_products", GetProducts);
@@ -28,6 +37,13 @@ app.MapPost("/update_product", UpdateProductById);
 app.MapPost("/delete_product", DeleteProductById);
 app.MapPost("/clear_products", ClearProducts);
 
+app.MapGet("send_email", SendEmail);
+
+async Task SendEmail(IEmailSender emailSender, HttpContext context)
+{
+    await emailSender.SendEmailAsync("to_address@example.com", "Приложение запущено", "Приложение запущено");
+    context.Response.StatusCode = StatusCodes.Status200OK;
+}
 
 void AddProduct(Product product,ICatalog catalog, HttpContext context)
 {
@@ -36,12 +52,12 @@ void AddProduct(Product product,ICatalog catalog, HttpContext context)
     context.Response.StatusCode = StatusCodes.Status201Created;
 }
 
-ConcurrentDictionary<Guid, Product> GetProducts(ICatalog catalog)
+ConcurrentDictionary<Guid, Product> GetProducts(ICatalog catalog, IClock clock)
 {
     return catalog.GetProducts();
 }
 
-Product GetProductById(string id, ICatalog catalog)
+Product GetProductById(string id, ICatalog catalog, IClock clock)
 {
     return catalog.GetProductById(Guid.Parse(id));
 }

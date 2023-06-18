@@ -5,7 +5,12 @@ namespace OnlineShopASP
     public class InMemoryCatalog : ICatalog
     {
         private ConcurrentDictionary<Guid, Product> _products = GenerateProducts(10);
+        private readonly IClock _clock;
 
+        public InMemoryCatalog(IClock clock)
+        {
+            _clock = clock;
+        }
 
         public ConcurrentDictionary<Guid, Product> GetProducts()
         {
@@ -13,7 +18,11 @@ namespace OnlineShopASP
             {
                 foreach (var product in _products.Values)
                 {
-                    product.Price *= 0.7m; // -30%
+                    if (!product.HasDiscountApplied) // Проверка свойства HasDiscountApplied
+                    {
+                        product.Price *= 0.7m; // -30%
+                        product.HasDiscountApplied = true; // Установка свойства HasDiscountApplied в true
+                    }
                 }
             }
 
@@ -29,9 +38,10 @@ namespace OnlineShopASP
             }
             else
             {
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday)
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday && !product.HasDiscountApplied) // Проверка свойства HasDiscountApplied
                 {
                     product.Price *= 0.7m; // -30%
+                    product.HasDiscountApplied = true; // Установка свойства HasDiscountApplied в true
                 }
                 return product;
             }
