@@ -15,8 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();                       // Регистрация зависимости каталог
 builder.Services.AddSingleton<IClock, UtcClock>();                               // Регистрация зависимости Time
-builder.Services.AddSingleton<IEmailSender, MailKitSmtpEmailSender>();          //Регистрация отправки почты
+builder.Services.AddScoped<IEmailSender, MailKitSmtpEmailSender>();          //Регистрация отправки почты
 builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();   //Регистрация фонового сервиса
+builder.Services.AddHostedService<SalesNotificatorBackgroundService>();     
 
 builder.Services.Configure<JsonOptions>(
    options =>
@@ -37,13 +38,13 @@ app.MapPost("/update_product", UpdateProductById);
 app.MapPost("/delete_product", DeleteProductById);
 app.MapPost("/clear_products", ClearProducts);
 
-app.MapGet("send_email", SendEmail);
+//app.MapGet("send_email", SendEmail);
 
-async Task SendEmail(IEmailSender emailSender, HttpContext context)
-{
-    await emailSender.SendEmailAsync("to_address@example.com", "Приложение запущено", "Приложение запущено");
-    context.Response.StatusCode = StatusCodes.Status200OK;
-}
+//async Task SendEmail(IEmailSender emailSender, HttpContext context)
+//{
+//    await emailSender.SendEmailAsync("to_address@example.com", "Приложение запущено", "Приложение запущено");
+//    context.Response.StatusCode = StatusCodes.Status200OK;
+//}
 
 void AddProduct(Product product,ICatalog catalog, HttpContext context)
 {

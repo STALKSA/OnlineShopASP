@@ -5,25 +5,22 @@ using MailKit.Net.Smtp;
 
 namespace OnlineShopASP
 {
-    public class MailKitSmtpEmailSender : IEmailSender
+    public class MailKitSmtpEmailSender : IEmailSender, IAsyncDisposable
     {
+        private readonly SmtpClient _smtpClient = new();
 
-        public async Task SendEmailAsync(string recepientEmail, string subject, string body)
+
+        public async ValueTask DisposeAsync()
         {
-            if (string.IsNullOrEmpty(recepientEmail))
-            {
-                throw new ArgumentException("Поле 'Получатель' не может быть пустым", nameof(recepientEmail));
-            }
+            await _smtpClient.DisconnectAsync(true);
+            _smtpClient.Dispose();
+        }
 
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("Поле 'Тема письма' не может быть пустым", nameof(subject));
-            }
-
-            if (string.IsNullOrEmpty(body))
-            {
-                throw new ArgumentException("Письмо не может быть пустым", nameof(body));
-            }
+        public async Task SendEmail(string recepientEmail, string subject, string body)
+        {
+            ArgumentNullException.ThrowIfNull(recepientEmail);
+            ArgumentNullException.ThrowIfNull(subject);
+            ArgumentNullException.ThrowIfNull(body);
 
             var email = new MimeMessage()
             {
@@ -35,19 +32,30 @@ namespace OnlineShopASP
                 From = { MailboxAddress.Parse("from_address@example.com") },
                 To = { (MailboxAddress.Parse(recepientEmail)) }
             };
-
-
-
-            // отправка email
-            using (var smtp = new SmtpClient())
-            {
-                await smtp.ConnectAsync("smtp.ethereal.email", 25);
-                await smtp.AuthenticateAsync("[USERNAME]", "[PASSWORD]");
-                await smtp.SendAsync(email);
-                await smtp.DisconnectAsync(true);
-            }
-
+            await EnsureConnectAndAuthenticateAsync();
+            await _smtpClient.SendAsync(email);
 
         }
+
+
+        private async Task EnsureConnectAndAuthenticateAsync()
+        {
+            if(!_smtpClient.IsConnected)
+            {
+               await _smtpClient.ConnectAsync("smtp.ethereal.email", 25);
+            }
+            if (!_smtpClient.IsAuthenticated)
+            {
+                await _smtpClient.AuthenticateAsync("[USERNAME]", "[PASSWORD]");
+            }
+        
+        }
+
+        private Task DisconnectAsync()
+        {
+            return _smtpClient.DisconnectAsync(true);
+        }
+
+        
     }
 }
