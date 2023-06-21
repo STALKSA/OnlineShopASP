@@ -2,13 +2,21 @@
 using MimeKit.Text;
 using MimeKit;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Options;
 
 namespace OnlineShopASP
 {
     public class MailKitSmtpEmailSender : IEmailSender, IAsyncDisposable
     {
         private readonly SmtpClient _smtpClient = new();
+        private readonly SmtpConfig _smtpConfig;
 
+        public MailKitSmtpEmailSender(IOptions<SmtpConfig> options)
+        {
+            ArgumentNullException.ThrowIfNull(options);
+            _smtpConfig = options.Value;
+
+        }
 
         public async ValueTask DisposeAsync()
         {
@@ -29,7 +37,7 @@ namespace OnlineShopASP
                 {
                     Text = body
                 },
-                From = { MailboxAddress.Parse("from_address@example.com") },
+                From = { MailboxAddress.Parse(_smtpConfig.FromEmail) },
                 To = { (MailboxAddress.Parse(recepientEmail)) }
             };
             await EnsureConnectAndAuthenticateAsync();
@@ -42,11 +50,11 @@ namespace OnlineShopASP
         {
             if(!_smtpClient.IsConnected)
             {
-               await _smtpClient.ConnectAsync("smtp.ethereal.email", 25);
+               await _smtpClient.ConnectAsync(_smtpConfig.Host, _smtpConfig.Port);
             }
             if (!_smtpClient.IsAuthenticated)
             {
-                await _smtpClient.AuthenticateAsync("[USERNAME]", "[PASSWORD]");
+                await _smtpClient.AuthenticateAsync(_smtpConfig.UserName, _smtpConfig.Password);
             }
         
         }

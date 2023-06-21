@@ -12,6 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddOptions<SmtpConfig>()
+    .BindConfiguration("SmtpConfig")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
 
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();                       // Регистрация зависимости каталог
 builder.Services.AddSingleton<IClock, UtcClock>();                               // Регистрация зависимости Time
