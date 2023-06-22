@@ -13,7 +13,7 @@ public class EmailSenderLoggingDecorator : IEmailSender  //перехват за
 
     public async Task SendEmail(string recepientEmail, string subject, string body)
     {
-        //перед тправкой мэйла
+        //перед отправкой мэйла
         _logger.LogInformation(message:$"Отправка на почту {recepientEmail}...{subject}, {body}");
         await _emailSender.SendEmail(recepientEmail, subject, body);
     }
