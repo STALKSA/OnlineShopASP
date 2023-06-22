@@ -19,9 +19,13 @@ builder.Services.AddOptions<SmtpConfig>()
 
 
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();                       // Регистрация зависимости каталог
-builder.Services.AddSingleton<IClock, UtcClock>();                               // Регистрация зависимости Time
-builder.Services.AddScoped<IEmailSender, MailKitSmtpEmailSender>();          //Регистрация отправки почты
-builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();   //Регистрация фонового сервиса
+//builder.Services.AddSingleton<IClock, UtcClock>();                               // Регистрация зависимости Time
+
+
+builder.Services.AddScoped<IEmailSender, MailKitSmtpEmailSender>();              //Регистрация отправки почты
+builder.Services.Decorate<IEmailSender, EmailSenderLoggingDecorator>();         //Декоратор
+
+//builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();   //Регистрация фонового сервиса
 builder.Services.AddHostedService<SalesNotificatorBackgroundService>();     
 
 builder.Services.Configure<JsonOptions>(

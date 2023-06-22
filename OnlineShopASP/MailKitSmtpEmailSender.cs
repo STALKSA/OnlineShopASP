@@ -10,12 +10,15 @@ namespace OnlineShopASP
     {
         private readonly SmtpClient _smtpClient = new();
         private readonly SmtpConfig _smtpConfig;
+       // private readonly ILogger<string> _logger;
+        private readonly IServiceProvider _serviceProvider;
 
-        public MailKitSmtpEmailSender(IOptions<SmtpConfig> options)
+        public MailKitSmtpEmailSender(IOptionsSnapshot<SmtpConfig> options, IServiceProvider serviceProvider)
         {
+            
             ArgumentNullException.ThrowIfNull(options);
             _smtpConfig = options.Value;
-
+            _serviceProvider = serviceProvider;
         }
 
         public async ValueTask DisposeAsync()
@@ -26,6 +29,8 @@ namespace OnlineShopASP
 
         public async Task SendEmail(string recepientEmail, string subject, string body)
         {
+            //_logger.LogInformation(recepientEmail, subject, body);
+
             ArgumentNullException.ThrowIfNull(recepientEmail);
             ArgumentNullException.ThrowIfNull(subject);
             ArgumentNullException.ThrowIfNull(body);
@@ -48,7 +53,9 @@ namespace OnlineShopASP
 
         private async Task EnsureConnectAndAuthenticateAsync()
         {
-            if(!_smtpClient.IsConnected)
+            
+
+            if (!_smtpClient.IsConnected)
             {
                await _smtpClient.ConnectAsync(_smtpConfig.Host, _smtpConfig.Port);
             }
