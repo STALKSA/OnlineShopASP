@@ -20,16 +20,26 @@ namespace OnlineShopASP
 
             var users = new User[] 
             { 
-                new User("address@example.com"),
                 new User("address@example.com")
+               
             };
            
             var sw = Stopwatch.StartNew();
             foreach (var user in users)
             {
-               sw.Restart();
-               await emailSender.SendEmail(user.Email, "Промоакции", "Список акций");
-               _logger.LogInformation($"Письмо отправлено {user.Email} за {sw.ElapsedMilliseconds} мс");
+                sw.Restart();
+                _logger.LogInformation("Отправка сообщения на имеил {Email}",user.Email);
+
+                try 
+                { 
+                    await emailSender.SendEmail(user.Email, "Промоакции", "Список акций");
+                    _logger.LogInformation("Письмо отправлено {Email} за {ElapsedMilliseconds} мс", user.Email, sw.ElapsedMilliseconds);
+                }
+               catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Ошибка при отправке сообщения на почту {Email}", user.Email);
+                }
+
             }
         }
     }

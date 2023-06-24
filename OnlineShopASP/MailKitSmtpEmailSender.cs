@@ -10,7 +10,7 @@ namespace OnlineShopASP
     {
         private readonly SmtpClient _smtpClient = new();
         private readonly SmtpConfig _smtpConfig;
-       // private readonly ILogger<string> _logger;
+        //private readonly ILogger<string> _logger;
         private readonly IServiceProvider _serviceProvider;
 
         public MailKitSmtpEmailSender(IOptionsSnapshot<SmtpConfig> options, IServiceProvider serviceProvider)
