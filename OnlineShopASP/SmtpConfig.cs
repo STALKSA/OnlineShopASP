@@ -4,15 +4,19 @@ namespace OnlineShopASP
 {
     public class SmtpConfig
     {
-        [Required, RegularExpression(@"^[a-zA-Z0-9\.\-_]+@example\.com$", ErrorMessage = "Невалидный Host формат")]      //хост в формате from_address@example.com
+        [Required, RegularExpression(@"[^@\s]+\.[^@\s]+\.[^@\s]+$")] 
         public string Host { get; set; }
-        [Required, RegularExpression(@"^[a-zA-Z0-9\.\-_]+$", ErrorMessage = "Невалидный UserName формат")]              //допустимый формат UserName123", "user.name", "user_name"
+        
+        [Required] 
         public string UserName { get; set; }
-        [Required, RegularExpression(@"^[a-zA-Z0-9\.\-_]+$", ErrorMessage = "Невалидный Password формат")]
+       
+        [Required]
         public string Password { get; set; }
-        [Required, Range(1, ushort.MaxValue, ErrorMessage = "Невалидное Port значение")]
+       
+        [Required, Range(1, ushort.MaxValue)]
         public int Port { get; set; }
-        [Required, EmailAddress(ErrorMessage = "Невалидный FromEmail формат")]
+        
+        [Required]
         public string FromEmail { get; set; }
     }
 }
