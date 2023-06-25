@@ -1,7 +1,10 @@
-﻿namespace OnlineShopASP
+﻿using System.Text.Json.Serialization;
+
+namespace OnlineShopASP
 {
     public class Product
     {
+        [JsonConstructor]
         public Product(string name, decimal price)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -26,6 +29,5 @@
         public DateTime ProducedAt { get; set; }
         public DateTime ExpiredAt { get; set; }
         public double Stock { get; set; }
-        public bool HasDiscountApplied { get; set; }
     }
 }

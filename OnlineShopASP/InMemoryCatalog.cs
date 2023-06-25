@@ -5,28 +5,11 @@ namespace OnlineShopASP
     public class InMemoryCatalog : ICatalog
     {
         private ConcurrentDictionary<Guid, Product> _products = GenerateProducts(10);
-        private readonly IClock _clock;
 
-        public InMemoryCatalog(IClock clock)
+        public List<Product> GetProducts()
         {
-            _clock = clock;
-        }
+            return _products.Values.ToList();
 
-        public ConcurrentDictionary<Guid, Product> GetProducts()
-        {
-            if (DateTime.Now.DayOfWeek == DayOfWeek.Monday)
-            {
-                foreach (var product in _products.Values)
-                {
-                    if (!product.HasDiscountApplied) // Проверка свойства HasDiscountApplied
-                    {
-                        product.Price *= 0.7m; // -30%
-                        product.HasDiscountApplied = true; // Установка свойства HasDiscountApplied в true
-                    }
-                }
-            }
-
-            return _products;
         }
 
 
@@ -38,11 +21,6 @@ namespace OnlineShopASP
             }
             else
             {
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday && !product.HasDiscountApplied) // Проверка свойства HasDiscountApplied
-                {
-                    product.Price *= 0.7m; // -30%
-                    product.HasDiscountApplied = true; // Установка свойства HasDiscountApplied в true
-                }
                 return product;
             }
         }
@@ -52,7 +30,7 @@ namespace OnlineShopASP
         {
             if (!_products.TryAdd(product.Id, product))
             {
-                throw new ArgumentException("Товар уже существует.", nameof(product));
+                throw new ArgumentException($"Товар {product.Id} уже существует.");
             };
 
         }
@@ -62,7 +40,7 @@ namespace OnlineShopASP
         {
             if (!_products.TryRemove(productId, out _))
             {
-                throw new InvalidOperationException("Товар не найден.");
+                throw new InvalidOperationException($"Товар {productId} не найден");
             }
 
         }
@@ -86,7 +64,7 @@ namespace OnlineShopASP
         }
 
 
-        private static ConcurrentDictionary<Guid, Product> GenerateProducts(int count)
+         static ConcurrentDictionary<Guid, Product> GenerateProducts(int count)
         {
             var random = new Random();
             var products = new ConcurrentDictionary<Guid, Product>();

@@ -35,18 +35,18 @@ builder.Services.AddOptions<SmtpConfig>()
 
 
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();                            // Регистрация зависимости каталог
-builder.Services.AddSingleton<IClock, UtcClock>();                                    // Регистрация зависимости Time
+//builder.Services.AddSingleton<IClock, UtcClock>();                                    // Регистрация зависимости Time
 builder.Services.AddScoped<IEmailSender, MailKitSmtpEmailSender>();                  //Регистрация отправки почты
 builder.Services.Decorate<IEmailSender, EmailSenderLoggingDecorator>();             //Декоратор
 builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();       //Регистрация фонового сервиса
 builder.Services.AddHostedService<SalesNotificatorBackgroundService>();     
 
-builder.Services.Configure<JsonOptions>(
-   options =>
-   {
-       options.SerializerOptions.WriteIndented = true;
-   }
-);
+//builder.Services.Configure<JsonOptions>(
+//   options =>
+//   {
+//       options.SerializerOptions.WriteIndented = true;
+//   }
+//);
 
 
     var app = builder.Build();
@@ -63,9 +63,9 @@ builder.Services.Configure<JsonOptions>(
 
     app.MapGet("/send_email", SendEmail);
 
-    async Task SendEmail(string recepientEmail, string subject, string message, IEmailSender emailSender)
+    async Task SendEmail(string recepientEmail, string subject, string body, IEmailSender emailSender)
     {
-        await emailSender.SendEmail(recepientEmail, subject, message);
+        await emailSender.SendEmail(recepientEmail, subject, body);
     }
 
     void AddProduct(Product product, ICatalog catalog, HttpContext context)
@@ -75,12 +75,12 @@ builder.Services.Configure<JsonOptions>(
         context.Response.StatusCode = StatusCodes.Status201Created;
     }
 
-    ConcurrentDictionary<Guid, Product> GetProducts(ICatalog catalog, IClock clock)
+    List<Product> GetProducts(ICatalog catalog)
     {
         return catalog.GetProducts();
     }
 
-    Product GetProductById(string id, ICatalog catalog, IClock clock)
+    Product GetProductById(string id, ICatalog catalog)
     {
         return catalog.GetProductById(Guid.Parse(id));
     }

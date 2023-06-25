@@ -10,15 +10,12 @@ namespace OnlineShopASP
     {
         private readonly SmtpClient _smtpClient = new();
         private readonly SmtpConfig _smtpConfig;
-        //private readonly ILogger<string> _logger;
-        private readonly IServiceProvider _serviceProvider;
 
-        public MailKitSmtpEmailSender(IOptionsSnapshot<SmtpConfig> options, IServiceProvider serviceProvider)
+        public MailKitSmtpEmailSender(IOptionsSnapshot<SmtpConfig> options)
         {
             
-            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(nameof(options));
             _smtpConfig = options.Value;
-            _serviceProvider = serviceProvider;
         }
 
         public async ValueTask DisposeAsync()
@@ -29,7 +26,6 @@ namespace OnlineShopASP
 
         public async Task SendEmail(string recepientEmail, string subject, string body)
         {
-            //_logger.LogInformation(recepientEmail, subject, body);
 
             ArgumentNullException.ThrowIfNull(recepientEmail);
             ArgumentNullException.ThrowIfNull(subject);
@@ -45,6 +41,7 @@ namespace OnlineShopASP
                 From = { MailboxAddress.Parse(_smtpConfig.FromEmail) },
                 To = { (MailboxAddress.Parse(recepientEmail)) }
             };
+
             await EnsureConnectAndAuthenticateAsync();
             await _smtpClient.SendAsync(email);
 
@@ -57,7 +54,7 @@ namespace OnlineShopASP
 
             if (!_smtpClient.IsConnected)
             {
-               await _smtpClient.ConnectAsync(_smtpConfig.Host, _smtpConfig.Port);
+               await _smtpClient.ConnectAsync(_smtpConfig.Host, _smtpConfig.Port, false);
             }
             if (!_smtpClient.IsAuthenticated)
             {
@@ -66,10 +63,10 @@ namespace OnlineShopASP
         
         }
 
-        private Task DisconnectAsync()
-        {
-            return _smtpClient.DisconnectAsync(true);
-        }
+        //private Task DisconnectAsync()
+        //{
+        //    return _smtpClient.DisconnectAsync(true);
+        //}
 
         
     }
