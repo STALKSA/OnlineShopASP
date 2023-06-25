@@ -16,9 +16,9 @@ Log.Information("Запуск");
 try
 {
 
-    var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((_, conf) =>
+builder.Host.UseSerilog((_, conf) =>   //логирование в файл
 {
     conf
         .WriteTo.Console()
