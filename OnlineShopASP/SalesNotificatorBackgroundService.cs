@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 
 namespace OnlineShopASP
 {
@@ -6,11 +7,14 @@ namespace OnlineShopASP
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<SalesNotificatorBackgroundService> _logger;
-        private const int MaxAttempts = 2;
-        public SalesNotificatorBackgroundService(IServiceProvider serviceProvider, ILogger<SalesNotificatorBackgroundService> logger) 
+        private readonly int _attemptsLimit;
+        public SalesNotificatorBackgroundService(IServiceProvider serviceProvider, 
+            ILogger<SalesNotificatorBackgroundService> logger,
+            IConfiguration configuration) 
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _attemptsLimit = configuration.GetValue<int>("SalesEmailAttemptsCount");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,11 +32,10 @@ namespace OnlineShopASP
             var sw = Stopwatch.StartNew();
             foreach (var user in users)
             {
-                int retryAttempt = 0;
                 sw.Restart();
                 _logger.LogInformation("Отправка сообщения на имеил {Email}",user.Email);
 
-                while (retryAttempt < MaxAttempts)
+                for (var attempt = 1; attempt <= _attemptsLimit; attempt++)
                 {
                     try
                     {
@@ -40,19 +43,18 @@ namespace OnlineShopASP
                         _logger.LogInformation("Письмо отправлено {Email} за {ElapsedMilliseconds} мс", user.Email, sw.ElapsedMilliseconds);
                         break;
                     }
-                    catch (Exception ex)
-                    {
-                        retryAttempt++;
-                        _logger.LogError(ex, "Ошибка при отправке сообщения на почту {Email}", user.Email);
-
-                        await Task.Delay(TimeSpan.FromSeconds(1));
+                    catch (Exception ex) when (attempt < _attemptsLimit)
+                    { 
+                         _logger.LogWarning(ex, "Повторная отправка сообщения на почту {Email}, попытка {counter}", user.Email, attempt + 1);
+                        await Task.Delay(1000, stoppingToken); 
                     }
-                }
+                    catch(Exception ex)
+                    {
+                         _logger.LogError(ex, "Ошибка при отправке сообщения на почту {Email}", user.Email);
+                        await Task.Delay(1000, stoppingToken);
+                    } 
                 
-                if (retryAttempt == MaxAttempts)
-                {
-                _logger.LogError("Не удалось отправить письмо на почту {Email} после {MaxAttempts} попыток", user.Email, MaxAttempts);
-                }
+                }  
             
             }
         }
