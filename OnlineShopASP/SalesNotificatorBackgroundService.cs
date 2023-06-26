@@ -51,7 +51,7 @@ namespace OnlineShopASP
                 
                 if (retryAttempt == MaxAttempts)
                 {
-                _logger.LogError("Не удалось отправить письмо на почту {Email} после {MaxRetryAttempts} попыток", user.Email, MaxAttempts);
+                _logger.LogError("Не удалось отправить письмо на почту {Email} после {MaxAttempts} попыток", user.Email, MaxAttempts);
                 }
             
             }
