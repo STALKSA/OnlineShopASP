@@ -6,7 +6,7 @@ namespace OnlineShopASP
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<SalesNotificatorBackgroundService> _logger;
-        private const int MaxRetryAttempts = 2;
+        private const int MaxAttempts = 2;
         public SalesNotificatorBackgroundService(IServiceProvider serviceProvider, ILogger<SalesNotificatorBackgroundService> logger) 
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
@@ -18,7 +18,6 @@ namespace OnlineShopASP
             await using var scope = _serviceProvider.CreateAsyncScope();
             var localServiceProvider = scope.ServiceProvider;
             var emailSender = localServiceProvider.GetRequiredService<IEmailSender>();
-            int retryAttempt = 0;
 
             var users = new User[] 
             { 
@@ -29,15 +28,17 @@ namespace OnlineShopASP
             var sw = Stopwatch.StartNew();
             foreach (var user in users)
             {
+                int retryAttempt = 0;
                 sw.Restart();
                 _logger.LogInformation("Отправка сообщения на имеил {Email}",user.Email);
 
-                while (retryAttempt < MaxRetryAttempts)
+                while (retryAttempt < MaxAttempts)
                 {
                     try
                     {
                         await emailSender.SendEmail(user.Email, "Промоакции", "Список акций");
                         _logger.LogInformation("Письмо отправлено {Email} за {ElapsedMilliseconds} мс", user.Email, sw.ElapsedMilliseconds);
+                        break;
                     }
                     catch (Exception ex)
                     {
@@ -46,9 +47,13 @@ namespace OnlineShopASP
 
                         await Task.Delay(TimeSpan.FromSeconds(1));
                     }
-
-                    _logger.LogError("Не удалось отправить письмо на почту {Email} после {MaxRetryAttempts} попыток", user.Email, MaxRetryAttempts);
                 }
+                
+                if (retryAttempt == MaxAttempts)
+                {
+                _logger.LogError("Не удалось отправить письмо на почту {Email} после {MaxRetryAttempts} попыток", user.Email, MaxAttempts);
+                }
+            
             }
         }
     }
