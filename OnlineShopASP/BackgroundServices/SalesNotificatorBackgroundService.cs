@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using OnlineShopASP.Interfaces;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 
 namespace OnlineShopASP.BackgroundServices

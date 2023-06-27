@@ -1,4 +1,5 @@
-﻿using Polly;
+﻿using OnlineShopASP.Interfaces;
+using Polly;
 using Polly.Retry;
 
 namespace OnlineShopASP.Decorators

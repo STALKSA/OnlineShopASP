@@ -1,4 +1,6 @@
-﻿namespace OnlineShopASP.Decorators;
+﻿using OnlineShopASP.Interfaces;
+
+namespace OnlineShopASP.Decorators;
 
 public class EmailSenderLoggingDecorator : IEmailSender  //перехват зависимости
 {
