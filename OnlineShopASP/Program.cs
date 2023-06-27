@@ -7,6 +7,7 @@ using OnlineShopASP;
 using System.Collections.Concurrent;
 using MailKit.Net.Smtp;
 using Serilog;
+using Microsoft.Extensions.DependencyInjection;
 
 Log.Logger = new LoggerConfiguration()
    .WriteTo.Console()
@@ -25,6 +26,8 @@ builder.Host.UseSerilog((_, conf) =>   //логирование в файл
         .WriteTo.File("log-.txt", rollingInterval: RollingInterval.Day);
 });
 
+builder.WebHost.UseSentry();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -37,21 +40,23 @@ builder.Services.AddOptions<SmtpConfig>()
 builder.Services.AddSingleton<ICatalog, InMemoryCatalog>();                              // Регистрация зависимости каталог
 //builder.Services.AddSingleton<IClock, UtcClock>();                                    // Регистрация зависимости Time
 builder.Services.AddScoped<IEmailSender, MailKitSmtpEmailSender>();                    //Регистрация отправки почты
-builder.Services.Decorate<IEmailSender, EmailSenderLoggingDecorator>();               //Декоратор
-//builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();       //Регистрация фонового сервиса
+builder.Services.Decorate<IEmailSender, EmailSenderLoggingDecorator>();               //Декоратор логирования
+builder.Services.Decorate<IEmailSender, EmailSenderRetryDecorator>();                //Декоратор повторной отправки сообщений
+//builder.Services.AddHostedService<AppStartedNotificatorBackgroundService>();      //Регистрация фонового сервиса
 //builder.Services.AddHostedService<SalesNotificatorBackgroundService>();     
 
-//builder.Services.Configure<JsonOptions>(
-//   options =>
-//   {
-//       options.SerializerOptions.WriteIndented = true;
-//   }
-//);
+   //builder.Services.Configure<JsonOptions>(
+   //   options =>
+   //   {
+   //       options.SerializerOptions.WriteIndented = true;
+   //   }
+   //);
 
 
-    var app = builder.Build();
+   var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseSentryTracing();
 
 
     app.MapPost("/add_product", AddProduct);
