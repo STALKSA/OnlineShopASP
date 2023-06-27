@@ -3,6 +3,7 @@ using MimeKit.Text;
 using MimeKit;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
+using OnlineShopASP.Interfaces;
 
 namespace OnlineShopASP
 {

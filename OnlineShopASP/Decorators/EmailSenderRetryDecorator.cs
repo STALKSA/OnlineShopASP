@@ -1,8 +1,7 @@
-﻿
-using Polly;
+﻿using Polly;
 using Polly.Retry;
 
-namespace OnlineShopASP
+namespace OnlineShopASP.Decorators
 {
     public class EmailSenderRetryDecorator : IEmailSender
     {
@@ -12,7 +11,7 @@ namespace OnlineShopASP
         private readonly int _attemptsLimit;
 
 
-        public EmailSenderRetryDecorator(IEmailSender emailSenderImplementation, 
+        public EmailSenderRetryDecorator(IEmailSender emailSenderImplementation,
             ILogger<EmailSenderRetryDecorator> logger,
             IConfiguration configuration)
         {
@@ -50,10 +49,10 @@ namespace OnlineShopASP
             }
 
             catch (Exception ex)
-               {
+            {
                 _logger.LogError(ex, "Ошибка Подключения...");
             }
-             
+
         }
     }
 }

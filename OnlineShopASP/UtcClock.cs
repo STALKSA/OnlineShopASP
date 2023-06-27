@@ -1,4 +1,6 @@
-﻿namespace OnlineShopASP
+﻿using OnlineShopASP.Interfaces;
+
+namespace OnlineShopASP
 {
     public class UtcClock : IClock
     {

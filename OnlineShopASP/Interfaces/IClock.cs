@@ -1,4 +1,4 @@
-﻿namespace OnlineShopASP
+﻿namespace OnlineShopASP.Interfaces
 {
     public interface IClock
     {

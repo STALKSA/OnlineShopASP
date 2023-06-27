@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace OnlineShopASP
+namespace OnlineShopASP.Interfaces
 {
     public interface ICatalog
     {

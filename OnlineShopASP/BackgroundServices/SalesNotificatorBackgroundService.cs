@@ -1,16 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 
-namespace OnlineShopASP
+namespace OnlineShopASP.BackgroundServices
 {
     public class SalesNotificatorBackgroundService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<SalesNotificatorBackgroundService> _logger;
         //private readonly int _attemptsLimit;
-        public SalesNotificatorBackgroundService(IServiceProvider serviceProvider, 
+        public SalesNotificatorBackgroundService(IServiceProvider serviceProvider,
             ILogger<SalesNotificatorBackgroundService> logger
-            /*IConfiguration configuration*/) 
+            /*IConfiguration configuration*/)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -23,12 +23,12 @@ namespace OnlineShopASP
             var localServiceProvider = scope.ServiceProvider;
             var emailSender = localServiceProvider.GetRequiredService<IEmailSender>();
 
-            var users = new User[] 
-            { 
+            var users = new User[]
+            {
                 new User("ksy9090@mail.ru")
-               
+
             };
-           
+
             var sw = Stopwatch.StartNew();
             foreach (var user in users)
             {

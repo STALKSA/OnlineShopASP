@@ -8,6 +8,8 @@ using System.Collections.Concurrent;
 using MailKit.Net.Smtp;
 using Serilog;
 using Microsoft.Extensions.DependencyInjection;
+using OnlineShopASP.Interfaces;
+using OnlineShopASP.Decorators;
 
 Log.Logger = new LoggerConfiguration()
    .WriteTo.Console()
