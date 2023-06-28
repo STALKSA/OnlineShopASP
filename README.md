@@ -30,4 +30,3 @@
 3. Реализуйте динамическую задержку перед каждым ретраем WaitAndRetry(https://github.com/App-vNext/Polly)
 - [ ] Добавьте отправку логов в баг трекер Sentry(https://github.com/getsentry/sentry-dotnet)
 - [ ] Добавьте логирование в Seq в ваш проект.
-
