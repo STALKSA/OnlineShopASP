@@ -34,29 +34,8 @@ namespace OnlineShopASP.BackgroundServices
             foreach (var user in users)
             {
                 sw.Restart();
-                await emailSender.SendEmail(user.Email, "Промоакции", "Список акций");
+                await emailSender.SendEmailAsync(user.Email, "Промоакции", "Список акций");
                 _logger.LogInformation("Письмо отправлено {Email} за {ElapsedMilliseconds} мс", user.Email, sw.ElapsedMilliseconds);
-
-                //for (var attempt = 1; attempt <= _attemptsLimit; attempt++)
-                //{
-                //    try
-                //    {
-                //        await emailSender.SendEmail(user.Email, "Промоакции", "Список акций");
-                //        _logger.LogInformation("Письмо отправлено {Email} за {ElapsedMilliseconds} мс", user.Email, sw.ElapsedMilliseconds);
-                //        break;
-                //    }
-                //    catch (Exception ex) when (attempt < _attemptsLimit)
-                //    { 
-                //         _logger.LogWarning(ex, "Повторная отправка сообщения на почту {Email}, попытка {counter}", user.Email, attempt + 1);
-                //        await Task.Delay(1000, stoppingToken); 
-                //    }
-                //    catch(Exception ex)
-                //    {
-                //         _logger.LogError(ex, "Ошибка при отправке сообщения на почту {Email}", user.Email);
-                //        await Task.Delay(1000, stoppingToken);
-                //    } 
-
-                //}  
 
             }
         }
@@ -64,3 +43,32 @@ namespace OnlineShopASP.BackgroundServices
 
     public record User(string Email);
 }
+
+
+
+
+
+
+
+
+
+//for (var attempt = 1; attempt <= _attemptsLimit; attempt++)
+//{
+//    try
+//    {
+//        await emailSender.SendEmail(user.Email, "Промоакции", "Список акций");
+//        _logger.LogInformation("Письмо отправлено {Email} за {ElapsedMilliseconds} мс", user.Email, sw.ElapsedMilliseconds);
+//        break;
+//    }
+//    catch (Exception ex) when (attempt < _attemptsLimit)
+//    { 
+//         _logger.LogWarning(ex, "Повторная отправка сообщения на почту {Email}, попытка {counter}", user.Email, attempt + 1);
+//        await Task.Delay(1000, stoppingToken); 
+//    }
+//    catch(Exception ex)
+//    {
+//         _logger.LogError(ex, "Ошибка при отправке сообщения на почту {Email}", user.Email);
+//        await Task.Delay(1000, stoppingToken);
+//    } 
+
+//} 

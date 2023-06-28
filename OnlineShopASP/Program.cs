@@ -58,6 +58,7 @@ builder.Services.Decorate<IEmailSender, EmailSenderRetryDecorator>();           
    var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseRouting();
     app.UseSentryTracing();
 
 
@@ -72,7 +73,7 @@ builder.Services.Decorate<IEmailSender, EmailSenderRetryDecorator>();           
 
     async Task SendEmail(string recepientEmail, string subject, string body, IEmailSender emailSender)
     {
-        await emailSender.SendEmail(recepientEmail, subject, body);
+        await emailSender.SendEmailAsync(recepientEmail, subject, body);
     }
 
     void AddProduct(Product product, ICatalog catalog, HttpContext context)

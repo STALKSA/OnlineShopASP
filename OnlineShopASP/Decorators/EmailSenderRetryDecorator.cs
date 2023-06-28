@@ -22,14 +22,14 @@ namespace OnlineShopASP.Decorators
             _attemptsLimit = configuration.GetValue<int>("SalesEmailAttemptsCount");
         }
 
-        public async Task SendEmail(string recepientEmail, string subject, string body)
+        public async Task SendEmailAsync(string recepientEmail, string subject, string body)
         {
 
             try
             {
-                RetryPolicy? policy = Policy
+                AsyncRetryPolicy? policy = Policy
                   .Handle<Exception>()
-                  .WaitAndRetry(new[]
+                  .WaitAndRetryAsync(new[]
                   {
                     TimeSpan.FromSeconds(1),
                     TimeSpan.FromSeconds(2),
@@ -39,8 +39,8 @@ namespace OnlineShopASP.Decorators
                       _logger.LogWarning(exception, "Ошибка при отправке сообщения. Повторная попытка: {Attempt}", retryAttempt);
                   });
 
-                var result = policy.ExecuteAndCapture(
-                           () => _emailSenderImplementation.SendEmail(recepientEmail, subject, body));
+                var result = await policy.ExecuteAndCaptureAsync(
+                           () => _emailSenderImplementation.SendEmailAsync(recepientEmail, subject, body));
 
                 if (result.Outcome == OutcomeType.Failure)
                 {
