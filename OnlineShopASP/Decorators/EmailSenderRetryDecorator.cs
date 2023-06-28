@@ -25,9 +25,7 @@ namespace OnlineShopASP.Decorators
         public async Task SendEmailAsync(string recepientEmail, string subject, string body)
         {
 
-            try
-            {
-                AsyncRetryPolicy? policy = Policy
+            AsyncRetryPolicy? policy = Policy
                   .Handle<Exception>()
                   .WaitAndRetryAsync(new[]
                   {
@@ -46,13 +44,6 @@ namespace OnlineShopASP.Decorators
                 {
                     _logger.LogError(result.FinalException, "Ошибка при отправке сообщения");
                 }
-
-            }
-
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка Подключения...");
-            }
 
         }
     }
